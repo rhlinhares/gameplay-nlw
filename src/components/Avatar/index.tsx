@@ -4,10 +4,11 @@ import { Image } from 'react-native';
 
 import { styles } from './styles';
 import { theme } from '../../global/styles/theme';
+import DiscordSvg from '../../assets/discord.svg';
 
 type Props = {
   urlImage: string;
-}
+};
 
 export function Avatar({ urlImage }: Props) {
   const { secondary50, secondary70 } = theme.colors;
@@ -17,11 +18,11 @@ export function Avatar({ urlImage }: Props) {
       style={styles.container}
       colors={[secondary50, secondary70]}
     >
-      <Image 
-        source={{ uri: urlImage }}
-        style={styles.avatar}
-      />
+      {urlImage ? (
+        <Image source={{ uri: urlImage }} style={styles.avatar} />
+      ) : (
+        <DiscordSvg width={30} height={30} />
+      )}
     </LinearGradient>
-  )
-
+  );
 }
