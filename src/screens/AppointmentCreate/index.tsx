@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { RectButton } from 'react-native-gesture-handler';
@@ -43,6 +44,23 @@ export function AppointmentCreate() {
   const [minute, setMinute] = useState('');
   const [description, setDescription] = useState('');
 
+  const [disabled, setDisabled] = useState(true);
+
+  useEffect(() => {
+    const noNullFields =
+      !!category &&
+      !!guild &&
+      !!day &&
+      !!month &&
+      !!hour &&
+      !!minute &&
+      !!description;
+
+    if (noNullFields) {
+      setDisabled(false);
+    } else setDisabled(true);
+  }, [category, guild, day, month, hour, minute, description]);
+
   function handleOpenGuilds() {
     setOpenGuildsModal(true);
   }
@@ -61,6 +79,11 @@ export function AppointmentCreate() {
   }
 
   async function handleSave() {
+    if (disabled) {
+      Alert.alert('Por favor, preencha todos os campos');
+      return;
+    }
+
     const newAppointment = {
       id: uuid.v4(),
       guild,
@@ -132,9 +155,24 @@ export function AppointmentCreate() {
                   Dia e mês
                 </Text>
                 <View style={styles.column}>
-                  <SmallInput maxLength={2} onChangeText={setDay} />
+                  <SmallInput
+                    maxLength={2}
+                    onChangeText={setDay}
+                    returnKeyType="next"
+                    blurOnSubmit={false}
+                    keyboardType={
+                      Platform.OS === 'ios' ? 'number-pad' : 'numeric'
+                    }
+                  />
                   <Text style={styles.divider}>/</Text>
-                  <SmallInput maxLength={2} onChangeText={setMonth} />
+                  <SmallInput
+                    maxLength={2}
+                    onChangeText={setMonth}
+                    returnKeyType="next"
+                    keyboardType={
+                      Platform.OS === 'ios' ? 'number-pad' : 'numeric'
+                    }
+                  />
                 </View>
               </View>
 
@@ -143,9 +181,23 @@ export function AppointmentCreate() {
                   Hora e minuto
                 </Text>
                 <View style={styles.column}>
-                  <SmallInput maxLength={2} onChangeText={setHour} />
+                  <SmallInput
+                    maxLength={2}
+                    onChangeText={setHour}
+                    returnKeyType="next"
+                    keyboardType={
+                      Platform.OS === 'ios' ? 'number-pad' : 'numeric'
+                    }
+                  />
                   <Text style={styles.divider}>:</Text>
-                  <SmallInput maxLength={2} onChangeText={setMinute} />
+                  <SmallInput
+                    maxLength={2}
+                    onChangeText={setMinute}
+                    returnKeyType="next"
+                    keyboardType={
+                      Platform.OS === 'ios' ? 'number-pad' : 'numeric'
+                    }
+                  />
                 </View>
               </View>
             </View>
@@ -161,10 +213,15 @@ export function AppointmentCreate() {
               maxLength={100}
               numberOfLines={5}
               autoCorrect={false}
+              returnKeyType="send"
               onChangeText={setDescription}
             />
             <View style={styles.footer}>
-              <Button title="Agendar" onPress={handleSave} />
+              <Button
+                title="Agendar"
+                onPress={handleSave}
+                isDisabled={disabled}
+              />
             </View>
           </View>
         </ScrollView>
